@@ -1,0 +1,71 @@
+________________________________________________________________________________
+Changes in version 0.1.26:
+________________________________________________________________________________
+typo
+* typo
+________________________________________________________________________________
+Changes in version 0.1.25:
+________________________________________________________________________________
+Fix variable name
+________________________________________________________________________________
+Changes in version 0.1.24:
+________________________________________________________________________________
+* Fixed parametrized step comparison
+________________________________________________________________________________
+Changes in version 0.1.23:
+________________________________________________________________________________
+Custom tags
+* Reduced duplicate code
+* Reduced duplicate code
+* Removed commented code
+* Added custom bug tags filtering
+________________________________________________________________________________
+Changes in version 0.1.22:
+________________________________________________________________________________
+Fix email and slack parsing issue
+* Fix email and slack parsing issue
+________________________________________________________________________________
+Changes in version 0.1.21:
+________________________________________________________________________________
+Support retry strategy for Allure Cucumber
+* Support retry strategy for Allure Cucumber
+________________________________________________________________________________
+Changes in version 0.1.20:
+________________________________________________________________________________
+* Changelog cleanup
+* Removed duplicate
+* Cleaned up changelog
+________________________________________________________________________________
+Changes in version 0.1.19:
+________________________________________________________________________________
+Added handling for country specific defects
+Fixed missing link in the report
+________________________________________________________________________________
+Changes in version 0.1.18:
+________________________________________________________________________________
+* fixing cucmber outline issues
+* allure helper fixs
+________________________________________________________________________________
+Changes in version 0.1.17:
+________________________________________________________________________________
+* Slack notification
+* Format code
+* Removed the .idea folder
+* Remove unused gem
+* Fix file path
+* Write allure result to txt file
+* Remove the inject for email formatter
+________________________________________________________________________________
+Changes in version 0.1.16:
+________________________________________________________________________________
+* Fixed report URL issue
+* Found a better way to get parent build url
+* Fetch upstream job via jenkins BUILD_URL so no configuration needed
+* Fixed getting upstream build url
+* Modified output suite name with alias job name
+* Fixed typo in JobParser
+* Added JobParser to parse jobs from jenkins API
+________________________________________________________________________________
+Changes in version 0.1.13:
+________________________________________________________________________________
+* Changed name according to agreed standard

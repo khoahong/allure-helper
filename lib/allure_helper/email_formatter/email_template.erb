@@ -1,0 +1,155 @@
+<html>
+<head>
+  <title>Automated Regression Test Report</title>
+</head>
+<body style="padding: 50px;">
+<div>
+  <p>Hi All,</p>
+  <p>Please find the Automated Regression Test Report on
+    <%= @test_environment %> environment on
+    <%= Time.now.strftime("%d/%m/%Y %H:%M") %></p>
+</div>
+
+<div>
+  <img type="text/html" width="500" height="300" src="
+    <%= @chart_url %>"/>
+</div>
+
+<div>
+  <table border="1" cellpadding="10" style="border-collapse: collapse; border-color: black; text-align: center; width: 100%;">
+    <thead>
+    <tr style="background-color: cornflowerblue;">
+      <th colspan="7">
+        App Wise Summary
+      </th>
+    </tr>
+    <tr style="background-color: lightsteelblue">
+      <th>App Name</th>
+      <th>Passed</th>
+      <th>Failed</th>
+      <th>Broken</th>
+      <th>Skipped</th>
+      <th>Total</th>
+      <th>Link to Allure</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @suites.each do |suite| %>
+      <tr>
+        <td><%= suite.name %></td>
+        <td>
+          <% if suite.allure_report_not_found %>
+            N/A
+          <% else %>
+            <%= suite.passed %>
+          <% end %>
+        </td>
+        <td
+          <% if suite.failed > 0 %> style="color: red;"
+          <% end %>>
+          <% if suite.allure_report_not_found %>
+            N/A
+          <% else %>
+            <%= suite.failed %>
+          <% end %>
+        </td>
+        <td>
+          <% if suite.allure_report_not_found %>
+            N/A
+          <% else %>
+            <%= suite.broken %>
+          <% end %>
+        </td>
+        <td>
+          <% if suite.allure_report_not_found %>
+            N/A
+          <% else %>
+            <%= suite.skipped %>
+          <% end %>
+        </td>
+        <td>
+          <% if suite.allure_report_not_found %>
+            N/A
+          <% else %>
+            <%= suite.passed + suite.failed + suite.skipped + suite.broken %>
+          <% end %>
+        </td>
+        <td>
+          <% if suite.allure_report_not_found %>
+            N/A
+          <% else %>
+            <a href="<%= suite.allure_report_url %>" target="_blank">Report</a>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+
+  <% if @suites.size == 1 %>
+    <table border="1" cellpadding="10" style="border-collapse: collapse; border-color: black; text-align: center; width: 100%; margin-top: 30px;">
+      <thead>
+      <tr style="background-color: cornflowerblue;">
+        <th colspan="7">
+          Feature Wise Summary
+        </th>
+      </tr>
+      <tr style="background-color: lightsteelblue">
+        <th>Feature</th>
+        <th>Passed</th>
+        <th>Failed</th>
+        <th>Broken</th>
+        <th>Skipped</th>
+        <th>Total</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @suites[0].features.each do |name, feature| %>
+        <tr>
+          <td>
+            <%= name %>
+          </td>
+          <td>
+            <%= feature.passed %>
+          </td>
+          <td
+            <% if feature.failed > 0 %> style="color: red;"
+            <% end %>>
+            <%= feature.failed %>
+          </td>
+          <td>
+            <%= feature.broken %>
+          </td>
+          <td>
+            <%= feature.skipped %>
+          </td>
+          <td>
+            <%= feature.passed + feature.failed + feature.skipped + feature.broken %>
+          </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>
+
+<% if @has_known_issues %>
+  <div>
+    <h3 style="margin-top: 30px">Known Issues</h3>
+    <% @suites.each do |suite| %>
+      <% if suite.known_issues.size > 0 %>
+        <div style="padding-left: 30px">
+          <p>
+            <%= suite.name %>
+            -
+            <% suite.known_issues.uniq.sort.each do |url| %>
+              <a href="<%= url %>" target="_blank"><%= url.split('/').last %></a>
+            <% end %>
+          </p>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+</body>
+</html>

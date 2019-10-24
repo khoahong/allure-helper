@@ -1,0 +1,11 @@
+Metrics/LineLength:
+  Max: 120
+
+Metrics/ParameterLists:
+  Max: 10
+
+Style/GlobalVars:
+  Enabled: false
+
+Documentation:
+  Enabled: false
