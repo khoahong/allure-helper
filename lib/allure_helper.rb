@@ -22,63 +22,63 @@ module AllureHelper
       end
     end
 
-    Cucumber::Formatter::LegacyApi::TableRowPrinter.class_eval do
-      def step_invocation(step_invocation, source)
-        result = source.step_result
-        step_invocation.messages.each { |message| formatter.puts(message) }
-        step_invocation.embeddings.each { |embedding| embedding.send_to_formatter(formatter) }
-        @failed_step = step_invocation if result.status == :failed
-        @status = step_invocation.status unless already_failed?
-        status_tracking(step_invocation, source) if source.step.instance_variable_get('@outline_step').text == source.scenario_outline&.steps&.last&.text
-      end
-
-      def status_tracking(step_invocation, source)
-        bug_tag = (source.scenario_outline.tags + source.examples_table.tags).find { |t| t.name.include? AllureCucumber::Config.issue_prefix }
-        if bug_tag
-          if @status == :passed
-            @status = :failed
-            step_invocation.exception = Exception.new("Test is broken due to an existing defect - #{bug_tag.name}")
-            @failed_step = step_invocation
-          else
-            @status = :undefined
-          end
-        end
-      end
-    end
+    # Cucumber::Formatter::LegacyApi::TableRowPrinter.class_eval do
+    #   def step_invocation(step_invocation, source)
+    #     result = source.step_result
+    #     step_invocation.messages.each { |message| formatter.puts(message) }
+    #     step_invocation.embeddings.each { |embedding| embedding.send_to_formatter(formatter) }
+    #     @failed_step = step_invocation if result.status == :failed
+    #     @status = step_invocation.status unless already_failed?
+    #     status_tracking(step_invocation, source) if source.step.instance_variable_get('@outline_step').text == source.scenario_outline&.steps&.last&.text
+    #   end
+    #
+    #   def status_tracking(step_invocation, source)
+    #     bug_tag = (source.scenario_outline.tags + source.examples_table.tags).find { |t| t.name.include? AllureCucumber::Config.issue_prefix }
+    #     if bug_tag
+    #       if @status == :passed
+    #         @status = :failed
+    #         step_invocation.exception = Exception.new("Test is broken due to an existing defect - #{bug_tag.name}")
+    #         @failed_step = step_invocation
+    #       else
+    #         @status = :undefined
+    #       end
+    #     end
+    #   end
+    # end
 
     # Hack to update cucumber test case status when the scenario has issue tag.
     #
-    Cucumber::Core::Test::Runner.class_eval do
-      def test_case(test_case, &descend)
-        @running_test_case = Cucumber::Core::Test::Runner::RunningTestCase.new
-        @running_test_step = nil
-        issue_prefix = AllureCucumber::Config.issue_prefix
-        scenario_tags = test_case.tags
-        AllureHelper.process_custom_tags(scenario_tags, issue_prefix)
-        event_bus.test_case_started(test_case)
-        descend.call(self)
-        # Update Cucumber test case status
-        # Check for issue tag post scenario execution
-        # If test has passed inspite of the issue tag being present,
-        # fail the test case to notify user to remove the tag
-        # Else mark the test as undefined. (undefined changed to broken in allure)
-        #--------------------------------------------------#
-
-        bug_tag = scenario_tags.find { |t| t.name.include? issue_prefix }
-        if bug_tag
-          if running_test_case.result.passed?
-            error = StandardError.new('Issue tag found, But test passed')
-            error.set_backtrace([])
-            running_test_case.failed(Cucumber::Core::Test::Result::Failed.new(running_test_case.result.duration, error))
-          else
-            running_test_case.pending("Test is broken due to existing defect: #{bug_tag.name}", Cucumber::Core::Test::Result::Undefined.new)
-          end
-        end
-        #--------------------------------------------------#
-        event_bus.test_case_finished(test_case, running_test_case.result)
-        self
-      end
-    end
+    # Cucumber::Core::Test::Runner.class_eval do
+    #   def test_case(test_case, &descend)
+    #     @running_test_case = Cucumber::Core::Test::Runner::RunningTestCase.new
+    #     @running_test_step = nil
+    #     issue_prefix = AllureCucumber::CucumberConfig.issue_prefix
+    #     scenario_tags = test_case.tags
+    #     AllureHelper.process_custom_tags(scenario_tags, issue_prefix)
+    #     event_bus.test_case_started(test_case)
+    #     descend.call(self)
+    #     # Update Cucumber test case status
+    #     # Check for issue tag post scenario execution
+    #     # If test has passed inspite of the issue tag being present,
+    #     # fail the test case to notify user to remove the tag
+    #     # Else mark the test as undefined. (undefined changed to broken in allure)
+    #     #--------------------------------------------------#
+    #
+    #     bug_tag = scenario_tags.find { |t| t.name.include? issue_prefix }
+    #     if bug_tag
+    #       if running_test_case.result.passed?
+    #         error = StandardError.new('Issue tag found, But test passed')
+    #         error.set_backtrace([])
+    #         running_test_case.failed(Cucumber::Core::Test::Result::Failed.new(running_test_case.result.duration, error))
+    #       else
+    #         running_test_case.pending("Test is broken due to existing defect: #{bug_tag.name}", Cucumber::Core::Test::Result::Undefined.new)
+    #       end
+    #     end
+    #     #--------------------------------------------------#
+    #     event_bus.test_case_finished(test_case, running_test_case.result)
+    #     self
+    #   end
+    # end
 
     def config
       @config ||= Configuration.new.tap do |config|
@@ -112,10 +112,11 @@ module AllureHelper
     def attach_rest_api_log(file_name, response)
       content = ApiHtmlBuilder.new.build_html response
       file_name = file_name.tr(' ', '_').delete('|').tr('/', '_')[0..60]
-      File.open("#{config.attachment_dir}/#{file_name}#{ALLURE_TYPE_HTML}", 'w+') do |file|
+      file_source = File.open("#{config.attachment_dir}/#{file_name}#{ALLURE_TYPE_HTML}", 'w+') do |file|
         file.write("#{content}\n\n")
+        file
       end
-      AllureHelper.attach_file(config.attachment_dir, file_name, ALLURE_TYPE_HTML) unless feature_tracker.nil?
+      Allure.add_attachment(name: file_name, source: file_source, type: 'text/html')
     end
 
     def log_file_list
