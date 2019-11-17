@@ -8,8 +8,8 @@ class TestCase
 
   def add_issues(test_case)
     test_case.source[1].tags.each do |tag|
-      if tag.name.include? AllureCucumber::Config.issue_prefix
-        @issues.push(tag.name.gsub(AllureCucumber::Config.issue_prefix, ''))
+      if tag.name.include? AllureCucumber::CucumberConfig.issue_prefix
+        @issues.push(tag.name.gsub(AllureCucumber::CucumberConfig.issue_prefix, ''))
       end
     end
   end
