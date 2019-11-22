@@ -3,12 +3,13 @@ require 'require_all'
 require_all 'lib/allure_helper'
 
 env = ENV["ENVIRONMENT"]
-build_url = "#{ENV["BUILD_URL"]}allure"
+jenkins_url = ENV['JENKINS_URL']
+job = ENV["JOB"]
 suites = []
 
 
 config = AllureHelper::Configuration.new.tap do |config|
-  config.build_url = URI::encode(build_url)
+  config.build_url = URI::encode "#{jenkins_url}/job/#{job}/allure"
   config.suite_name = 'abc'
 end
 
