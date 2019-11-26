@@ -13,5 +13,10 @@ end
 suite = AllureExtractor.extract_allure_content(config)
 
 file_path = Pathname.new(Dir.pwd).join(config.allure_result_file)
-content = "Total: #{suite.total}, Passed: #{suite.passed}, Failed: #{suite.failed}, Broken: #{suite.broken}, Skipped: #{suite.skipped}"
+overall_result = if suite.failed > 0
+                   'OVERALL_FAILED'
+                 else
+                   'OVERALL_PASSED'
+                 end
+content = "#{overall_result} | Total: #{suite.total}, Passed: #{suite.passed}, Failed: #{suite.failed}, Broken: #{suite.broken}, Skipped: #{suite.skipped}"
 File.open(file_path, 'w') { |f| f.write(content) }
