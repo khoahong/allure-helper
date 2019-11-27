@@ -13,7 +13,7 @@ end
 suite = AllureExtractor.extract_allure_content(config)
 
 file_path = Pathname.new(Dir.pwd).join(config.allure_result_file)
-overall_result = if suite.failed > 0 || suite.total == 0
+overall_result = if suite.failed > 0 || suite.total == 0 || suite.passed < suite.total
                    'OVERALL_FAILED'
                  else
                    'OVERALL_PASSED'
